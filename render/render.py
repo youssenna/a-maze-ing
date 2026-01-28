@@ -119,6 +119,20 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
         k, "assets/arrow_right.xpm")
     left_img, _, _ = mlx1.mlx_xpm_file_to_image(
         k, "assets/arrow_left.xpm")
+    image_42, _, _, = mlx1.mlx_xpm_file_to_image(
+        k, "assets/wall_1337_neon.xpm")
+
+    def draw_42(mz):
+        y_offset = 0
+        for row in mz:
+            x_offset = 0
+            for cell in row:
+                if cell._42_path is True:
+                    mlx1.mlx_put_image_to_window(k, win, image_42, x_offset, y_offset)
+                x_offset += 40
+            y_offset += 40
+
+
 
     directions = [down_img, up_img, right_img, left_img]
 
@@ -133,6 +147,14 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
                                  path_end_img,
                                  EXIT[0] * 40 + 10,
                                  EXIT[1] * 40 + 10)
+
+
+    def back_img():
+        for y in range(0, length_pixel, bg_lenght):
+            for x in range(0, width_pixel, bg_width):
+                mlx1.mlx_put_image_to_window(k, win, bg_img, x, y)
+
+
 
     pl_x = ENTRY[0] * 40 + 10
     pl_y = ENTRY[1] * 40 + 10
@@ -197,12 +219,12 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
     draw_maze(mz, wall_color, True)
 
     def render():
+        draw_42(mz)
         draw_maze(mz, wall_color, False)
         mlx1.mlx_put_image_to_window(k, win, img, 0, 0)
         player(pl_x, pl_y)
 
     render()
-
     prev_x = 0
     prev_y = 0
 
