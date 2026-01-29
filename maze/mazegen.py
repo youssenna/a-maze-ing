@@ -1,17 +1,24 @@
 import random
 from typing import Any
-
-
-class InvalidDistinationFor42Path(Exception):
-    pass
-
-
-class InvalidEntryExitPoint(Exception):
-    pass
+from utils.errors import InvalidDistinationFor42Path, InvalidEntryExitPoint
 
 
 class Cell:
+    """
+    Represents a single cell in the maze.
+
+    Attributes:
+        north (bool): True if the north wall exists.
+        south (bool): True if the south wall exists.
+        east (bool): True if the east wall exists.
+        west (bool): True if the west wall exists.
+        visited (bool): True if the cell has been visited during maze
+        generation.
+        _42_path (bool): True if the cell is part of the special "42 pattern"
+        path.
+    """
     def __init__(self) -> None:
+        """Initialize a cell with all walls intact and not visited."""
         self.north: bool = True
         self.west: bool = True
         self.south: bool = True
@@ -21,8 +28,32 @@ class Cell:
 
 
 class MazeGenerator:
-    def __init__(self, cols: int, rows: int, Entry: Any, EXIT: Any, out_file
-                 ) -> None:
+    """
+    Generates mazes using different algorithms (Backtracker, Prim's) and can
+    create a special "42 pattern" path for mazes.
+
+    Attributes:
+        x (int): Number of columns in the maze.
+        y (int): Number of rows in the maze.
+        maze (list[list[Cell]]): 2D grid representing the maze.
+        stack (list[list[Cell]]): Helper stack used in some algorithms.
+        entry (tuple[int, int]): Coordinates of the maze entry point.
+        exit (tuple[int, int]): Coordinates of the maze exit point.
+        out_file (str): Path to the file where the maze output will be saved.
+    """
+    def __init__(self, cols: int, rows: int, Entry: Any, EXIT: Any,
+                 out_file: Any) -> None:
+        """
+        Initialize the maze generator with dimensions, entry/exit points, and
+        output file.
+
+        Args:
+            cols (int): Number of columns.
+            rows (int): Number of rows.
+            Entry (tuple[int, int]): Entry point coordinates.
+            EXIT (tuple[int, int]): Exit point coordinates.
+            out_file (str): Path to the output file.
+        """
         self.x = cols
         self.y = rows
         self.maze:  list[list[Cell]] = self.creat_grid()
@@ -32,9 +63,26 @@ class MazeGenerator:
         self.out_file = out_file
 
     def creat_grid(self) -> list[list[Cell]]:
+        """
+        Create a 2D grid of Cell objects.
+
+        Returns:
+            list[list[Cell]]: A grid with all cells initialized with walls.
+        """
         return [[Cell() for _ in range(self.x)] for _ in range(self.y)]
 
     def find_nighbors(self, cell: Any) -> list[tuple[int, int, str]]:
+        """
+        Find all unvisited neighbor cells of a given cell.
+
+        Args:
+            cell (tuple[int, int]): Coordinates (x, y) of the current cell.
+
+        Returns:
+            list[tuple[int, int, str]]: List of tuples with neighbor
+            coordinates
+            and direction relative to the current cell.
+        """
         x, y = cell
         maze = self.maze
         unvisited_cells = []
@@ -53,6 +101,16 @@ class MazeGenerator:
         return unvisited_cells
 
     def creat_maze_bakctracker_algo(self) -> None:
+        """
+        Generate a maze using the recursive backtracker algorithm.
+        Also checks and preserves the "42 pattern" if applicable.
+
+        Raises:
+            InvalidDistinationFor42Path: If the maze is too small for 42
+            pattern.
+            InvalidEntryExitPoint: If entry or exit points are inside the 42
+            path.
+        """
         entry = self.entry
         exit = self.exit
         if (self.x < 9 or self.y < 9):
@@ -67,6 +125,16 @@ invalid (inside '42 path')")
         self.remove_walls_backtracker_algo()
 
     def creat_maze_prims_algo(self) -> None:
+        """
+        Generate a maze using Prim's algorithm.
+        Also checks and preserves the "42 pattern" if applicable.
+
+        Raises:
+            InvalidDistinationFor42Path: If the maze is too small for 42
+            pattern.
+            InvalidEntryExitPoint: If entry or exit points are inside the 42
+            path.
+        """
         entry = self.entry
         exit = self.exit
         if (self.x < 9 or self.y < 9):
@@ -81,6 +149,14 @@ invalid (inside '42 path')")
         self.remove_walls_prims_algo()
 
     def remove_walls_backtracker_algo(self, i: int = 0, j: int = 0) -> None:
+        """
+        Recursively remove walls using the backtracker algorithm starting from
+        (i, j).
+
+        Args:
+            i (int): X-coordinate to start.
+            j (int): Y-coordinate to start.
+        """
         self.maze[j][i].visited = True
         neighbors = self.find_nighbors((i, j))
         while neighbors:
@@ -103,6 +179,17 @@ invalid (inside '42 path')")
             neighbors = self.find_nighbors((i, j))
 
     def find_visited_cell(self, cell: tuple[int, int]) -> Any:
+        """
+        Find all neighboring cells that have already been visited.
+
+        Args:
+            cell (tuple[int, int]): Coordinates (x, y) of the current cell.
+
+        Returns:
+            list[tuple[int, int, str]]: List of visited neighbor cells with
+            their
+            coordinates and direction relative to the current cell.
+        """
         x, y = cell
         maze = self.maze
         visited_cells = []
@@ -120,6 +207,16 @@ invalid (inside '42 path')")
 
     @staticmethod
     def remove_duplicate_and_visited(items: Any) -> Any:
+        """
+        Remove duplicates from a list of cells.
+
+        Args:
+            items (list[tuple[int, int, str]]): List of cells with coordinates
+            and directions.
+
+        Returns:
+            list[tuple[int, int, str]]: List with duplicates removed.
+        """
         none_duplicate: Any = []
         for item in items:
             if item not in none_duplicate:
@@ -127,6 +224,15 @@ invalid (inside '42 path')")
         return none_duplicate
 
     def remove_wall(self, cell1: tuple[int, int, str], cell2: Any) -> None:
+        """
+        Remove the wall between two adjacent cells.
+
+        Args:
+            cell1 (tuple[int, int, str]): Coordinates (x, y) and direction of
+            the first cell.
+            cell2 (tuple[int, int, str]): Coordinates (x, y) and direction of
+            the second cell.
+        """
         x1 = cell1[0]
         y1 = cell1[1]
         x2 = cell2[0]
@@ -146,6 +252,34 @@ invalid (inside '42 path')")
             self.maze[y2][x2].south = False
 
     def remove_walls_prims_algo(self, i: int = 0, j: int = 0) -> None:
+        """
+    Generate a maze using Prim's algorithm starting from the cell (i, j).
+
+    This algorithm works by maintaining a list of frontier cells (cells
+    adjacent
+    to the maze) and repeatedly adding a random frontier cell to the maze while
+    removing the wall between it and an already visited neighboring cell.
+
+    Args:
+        i (int): X-coordinate of the starting cell. Defaults to 0.
+        j (int): Y-coordinate of the starting cell. Defaults to 0.
+
+    Notes:
+        - Uses `self.find_nighbors` to find unvisited neighboring cells.
+        - Uses `self.find_visited_cell` to select which wall to remove when
+          connecting the frontier cell to the maze.
+        - Handles cells with the "42 pattern" if present.
+        - Random choice is used both for selecting the next frontier cell and
+          in case multiple visited neighbors exist.
+        - Walls are removed appropriately using `self.remove_wall` or direct
+          attribute manipulation depending on directions.
+
+    Modifies:
+        - `self.maze`: Updates visited status of cells and removes walls
+        between
+          cells to form the maze.
+        - `frentier_cells`: Dynamically updated as the algorithm progresses.
+    """
         self.maze[j][i].visited = True
 
         frentier_cells = self.find_nighbors((i, j))
@@ -181,6 +315,13 @@ invalid (inside '42 path')")
             frentier_cells.remove(target_cell)
 
     def creat_42_pathren(self) -> None:
+        """
+        Generate a predefined '42' shaped path inside the maze.
+
+        The path is marked by setting the _42_path attribute of cells to True.
+        Ensures the 42 pattern is centered in the maze and does not overlap
+        walls.
+        """
         x = self.x // 2 - 3
         y = self.y // 2 - 3
         first_y = y
@@ -223,7 +364,18 @@ invalid (inside '42 path')")
 
     #  i need to fix return
     @staticmethod
-    def print_walls_as_hex(cell: Cell) -> str:
+    def print_walls_as_hex(cell: Cell) -> Any:
+        """
+        Convert the walls of a cell into a single hexadecimal character.
+
+        Each wall corresponds to a bit: N=1, E=2, S=4, W=8 (F=all walls).
+
+        Args:
+            cell (Cell): The cell to convert.
+
+        Returns:
+            str: Hexadecimal representation of the cell's walls.
+        """
         if (cell.north and cell.east and cell.south and cell.west):
             return "F"
         elif (not cell.north and cell.east and cell.south and cell.west):
@@ -262,9 +414,18 @@ invalid (inside '42 path')")
         elif (not cell.north and not cell.east and not cell.south
               and not cell.west):
             return "0"
+        return None
 
     # this function those not finish
-    def creat_output_file(self, path: str) -> None:
+    def creat_output_file(self, path: Any) -> None:
+        """
+        Save the maze to a file with walls in hex and the path, entry, and
+        exit.
+
+        Args:
+            path (list[tuple[int, int]]): The solution path to print in the
+            file.
+        """
         with open(self.out_file, "w") as file:
             for y in range(self.y):
                 for x in range(self.x):
@@ -277,6 +438,16 @@ invalid (inside '42 path')")
 
     @staticmethod
     def print_path(path: list[tuple[int, int]]) -> str:
+        """
+        Convert a path of coordinates into directions (N, S, E, W).
+
+        Args:
+            path (list[tuple[int, int]]): List of coordinates representing the
+            path.
+
+        Returns:
+            str: String of directions representing the path.
+        """
         # prev move
         x1, y1 = path[0]
         path_directions = ""
@@ -294,38 +465,22 @@ invalid (inside '42 path')")
             x1, y1 = path[i]
         return path_directions
 
-    def debug_print(self) -> None:
-        for y in range(self.y):
-            # top walls
-            for x in range(self.x):
-                print("====" if self.maze[y][x].north else "=   ", end="")
-            print("=")
+    # def debug_print(self) -> None:
+    #     """
+    #     Print the maze to the terminal for debugging purposes.
 
-            # side walls
-            for x in range(self.x):
-                print("||  " if self.maze[y][x].west else "    ", end="")
-            print("||")
+    #     Displays walls as "====" for top walls and "||" for side walls.
+    #     """
+    #     for y in range(self.y):
+    #         # top walls
+    #         for x in range(self.x):
+    #             print("====" if self.maze[y][x].north else "=   ", end="")
+    #         print("=")
 
-        # bottom border
-        print("====" * self.x + "=")
+    #         # side walls
+    #         for x in range(self.x):
+    #             print("||  " if self.maze[y][x].west else "    ", end="")
+    #         print("||")
 
-
-if __name__ == "__main__":
-    # her we creat our maze with closed walls
-    print("\n#######################  Maze 1 #########################\n")
-    a = MazeGenerator(30, 12)
-    try:
-        a.creat_maze_bakctracker_algo()
-    except InvalidDistinationFor42Path:
-        a.remove_walls_backtracker_algo()
-    a.debug_print()
-    b = MazeGenerator(30, 12)
-    print("\n#######################  Maze 2  #########################\n")
-    try:
-        b.creat_maze_prims_algo()
-    except InvalidDistinationFor42Path:
-        b.remove_walls_prims_algo()
-
-    #  this method show our maze in terminal use it to test
-    b.debug_print()
-    a.output_file()
+    #     # bottom border
+    #     print("====" * self.x + "=")

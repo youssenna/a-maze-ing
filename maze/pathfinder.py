@@ -1,14 +1,16 @@
 from collections import deque
+from typing import Any
 
 
-def init_path(maze):
+def init_path(maze: Any) -> Any:
     for row in maze:
         for cell in row:
             cell.BFSvisited = False
             cell.parent = None
 
 
-def pathfinder(maze, ENTRY, EXIT, WIDTH, HEIGHT):
+def pathfinder(maze: Any, ENTRY: Any, EXIT: Any, WIDTH: Any,
+               HEIGHT: Any) -> Any:
     init_path(maze)
     q = deque([ENTRY])
     x, y = ENTRY

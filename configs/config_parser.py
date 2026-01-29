@@ -1,15 +1,16 @@
 import sys
 from utils import errors
+from typing import Any
 
 
-def parser(file):
+def parser(file: Any) -> Any:
     if file.endswith(".txt") is False and file.endswith(".conf") is False:
         raise errors.ConfigsError(
             "Error: invalid configuration file "
             "format (expected a .txt or .conf file)"
         )
 
-    def checker_convert(configs: dict):
+    def checker_convert(configs: Any) -> Any:
         keys = ["WIDTH",
                 "HEIGHT",
                 "ENTRY",
@@ -85,7 +86,7 @@ def parser(file):
                     f"Error: missing mandatory configuration key: '{key}'"
                 )
 
-    def parsing(file_obj, file: str) -> dict:
+    def parsing(file_obj: Any, file: str) -> Any:
         configs = {}
         try:
             for line in file_obj:

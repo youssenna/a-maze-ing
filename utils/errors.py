@@ -8,3 +8,7 @@ class InvalidDistinationFor42Path(Exception):
 
 class InvalidCoordinates(Exception):
     pass
+
+
+class InvalidEntryExitPoint(Exception):
+    pass

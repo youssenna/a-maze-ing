@@ -1,10 +1,11 @@
 import time
 import random
 import sys
-from maze.mazegen import (MazeGenerator, InvalidDistinationFor42Path,
-                          InvalidEntryExitPoint)
+from typing import Any
+from maze.mazegen import (MazeGenerator)
 from maze.pathfinder import pathfinder
-from utils.errors import InvalidCoordinates
+from utils.errors import (InvalidCoordinates, InvalidDistinationFor42Path,
+                          InvalidEntryExitPoint)
 
 try:
     from mlx import Mlx
@@ -17,8 +18,8 @@ except ModuleNotFoundError:
     )
 
 
-def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
-               seed: bool):
+def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
+               out_file: str, is_perfect: bool, seed: bool) -> Any:
     width_pixel = width * 40
     length_pixel = length * 40
     if width_pixel > 1920 or length_pixel > 1000:
@@ -67,7 +68,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
     data = result[0]
     size_line = result[2]
 
-    def put_pixel(x, y, color):
+    def put_pixel(x: Any, y: Any, color: Any) -> Any:
         """Put a pixel at (x, y) with the given color in the image data"""
         if 0 <= x < width_pixel and 0 <= y < length_pixel:
             offset = y * size_line + x * 4
@@ -85,7 +86,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
                                         k,
                                         "assets/player_idle1.xpm")
 
-    def back_img():
+    def back_img() -> Any:
         for y in range(0, length_pixel, bg_lenght):
             for x in range(0, width_pixel, bg_width):
                 mlx1.mlx_put_image_to_window(k, win, bg_img, x, y)
@@ -93,7 +94,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
     back_img()
     back_img()
 
-    def player(x, y):
+    def player(x: Any, y: Any) -> Any:
         mlx1.mlx_put_image_to_window(k, win, pl_img, x, y)
 
     colors = [
@@ -122,7 +123,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
     image_42, _, _, = mlx1.mlx_xpm_file_to_image(
         k, "assets/wall_1337_neon.xpm")
 
-    def draw_42(mz):
+    def draw_42(mz: Any) -> Any:
         y_offset = 0
         for row in mz:
             x_offset = 0
@@ -147,17 +148,17 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
                                  EXIT[0] * 40 + 10,
                                  EXIT[1] * 40 + 10)
 
-    def back_img():
-        for y in range(0, length_pixel, bg_lenght):
-            for x in range(0, width_pixel, bg_width):
-                mlx1.mlx_put_image_to_window(k, win, bg_img, x, y)
+    # def back_img() -> Any:
+    #     for y in range(0, length_pixel, bg_lenght):
+    #         for x in range(0, width_pixel, bg_width):
+    #             mlx1.mlx_put_image_to_window(k, win, bg_img, x, y)
 
     pl_x = ENTRY[0] * 40 + 10
     pl_y = ENTRY[1] * 40 + 10
 
-    def draw_path():
+    def draw_path() -> Any:
         path = pathfinder(mz, (pl_x // 40, pl_y // 40), EXIT, width, length)
-        direction_i = None
+        direction_i = 0
         CELL = 40
         i = 1
         for x, y in path:
@@ -183,7 +184,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
                 i += 1
                 break
 
-    def draw_maze(maze, color, sleep):
+    def draw_maze(maze: Any, color: Any, sleep: Any) -> Any:
         CELL = 40
         y_offset = 0
         for row in maze:
@@ -214,7 +215,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
 
     draw_maze(mz, wall_color, True)
 
-    def render():
+    def render() -> Any:
         draw_42(mz)
         draw_maze(mz, wall_color, False)
         mlx1.mlx_put_image_to_window(k, win, img, 0, 0)
@@ -224,7 +225,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
     prev_x = 0
     prev_y = 0
 
-    def regenerate_maze():
+    def regenerate_maze() -> Any:
         nonlocal pl_x, pl_y
         pl_x = ENTRY[0] * 40 + 10
         pl_y = ENTRY[1] * 40 + 10
@@ -262,7 +263,7 @@ def mlx_render(width, length, ENTRY, EXIT, out_file: str, is_perfect: bool,
             k, win, path_end_img, EXIT[0] * 40 + 10, EXIT[1] * 40 + 10)
         mz = new_maze
 
-    def on_key(keycode, param):
+    def on_key(keycode: Any, param: Any) -> Any:
         nonlocal pl_x, pl_y, wall_color, prev_x, prev_y
         prev_x = pl_x
         prev_y = pl_y
