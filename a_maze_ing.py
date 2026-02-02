@@ -1,3 +1,20 @@
+"""Main entry point for the maze generation and visualization application.
+
+This script loads a configuration file, generates a maze based on the
+specified parameters, and launches an interactive visualization using
+MiniLibX graphics.
+
+Usage:
+    python a_maze_ing.py <config_file>
+
+Args:
+    config_file: Path to a .txt or .conf configuration file containing
+                maze generation parameters.
+
+Example:
+    python a_maze_ing.py config.conf
+"""
+
 import sys
 from configs.config_parser import parser
 from render.render import mlx_render

@@ -1,9 +1,40 @@
+"""Configuration file parser for maze generation settings.
+
+This module handles parsing and validation of configuration files that define
+maze generation parameters including dimensions, entry/exit points, and
+generation options.
+"""
+
 import sys
 from utils import errors
 from typing import Any
 
 
 def parser(file: Any) -> Any:
+    """Parse and validate a maze configuration file.
+
+    Reads a configuration file in KEY=VALUE format and validates all
+    required parameters for maze generation.
+
+    Args:
+        file: Path to the configuration file (.txt or .conf extension).
+
+    Returns:
+        A dictionary containing validated configuration values:
+            - WIDTH (int): Maze width in cells.
+            - HEIGHT (int): Maze height in cells.
+            - ENTRY (tuple): Entry point coordinates (x, y).
+            - EXIT (tuple): Exit point coordinates (x, y).
+            - OUTPUT_FILE (str): Path for the output maze file.
+            - PERFECT (bool): Whether to generate a perfect maze.
+            - SEED (bool): Whether to use a fixed random seed.
+
+    Raises:
+        ConfigsError: If the file format is invalid, required keys are
+                     missing, or values fail validation.
+        SystemExit: If the file is not found, permission denied, or
+                   coordinates are out of bounds.
+    """
     if file.endswith(".txt") is False and file.endswith(".conf") is False:
         raise errors.ConfigsError(
             "Error: invalid configuration file "
@@ -11,6 +42,17 @@ def parser(file: Any) -> Any:
         )
 
     def checker_convert(configs: Any) -> Any:
+        """Validate and convert configuration values to appropriate types.
+
+        Checks that all required keys are present and converts string values
+        to their proper types (integers, booleans, tuples).
+
+        Args:
+            configs: Dictionary of raw string configuration values.
+
+        Raises:
+            ConfigsError: If validation fails for any configuration value.
+        """
         keys = ["WIDTH",
                 "HEIGHT",
                 "ENTRY",
@@ -87,6 +129,21 @@ def parser(file: Any) -> Any:
                 )
 
     def parsing(file_obj: Any, file: str) -> Any:
+        """Parse configuration file contents into a dictionary.
+
+        Reads lines from the file, ignoring comments and empty lines,
+        and extracts KEY=VALUE pairs.
+
+        Args:
+            file_obj: An open file object to read from.
+            file: The file path (used for error messages).
+
+        Returns:
+            A dictionary of validated configuration values.
+
+        Raises:
+            ConfigsError: If line format is invalid or permission denied.
+        """
         configs = {}
         try:
             for line in file_obj:

@@ -1,3 +1,14 @@
+"""Setup script for the mazegen package.
+
+This script configures the maze generation package for installation
+using setuptools. It enables the package to be installed via pip
+or built into a distributable wheel.
+
+Usage:
+    pip install .
+    python setup.py bdist_wheel
+"""
+
 from setuptools import setup, find_packages
 
 setup(

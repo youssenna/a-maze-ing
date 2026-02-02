@@ -18,8 +18,46 @@ except ModuleNotFoundError:
     )
 
 
+"""Render module for maze visualization using MiniLibX.
+
+This module provides functionality to render and interact with generated mazes
+using the MiniLibX graphics library. It supports player movement, pathfinding
+visualization, and maze regeneration.
+"""
+
+
 def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
                out_file: str, is_perfect: bool, seed: bool) -> Any:
+    """Render and display an interactive maze using MiniLibX.
+
+    Creates a graphical window displaying a procedurally generated maze.
+    Supports player movement with arrow keys, pathfinding visualization,
+    and maze regeneration.
+
+    Args:
+        width: The width of the maze in cells (minimum 6, maximum 48).
+        length: The height/length of the maze in cells (minimum 6, maximum 25).
+        ENTRY: A tuple (x, y) representing the entry point coordinates.
+        EXIT: A tuple (x, y) representing the exit point coordinates.
+        out_file: Path to the output file where maze data will be saved.
+        is_perfect: If True, generates a perfect maze using backtracker
+        algorithm.
+            If False, uses Prim's algorithm which may create loops.
+        seed: If True, uses a fixed random seed (1) for reproducible mazes.
+
+    Raises:
+        InvalidCoordinates: If window size exceeds screen resolution
+        (1920x1000) or if dimensions are below minimum (6x6).
+        InvalidEntryExitPoint: If entry or exit points are invalid.
+
+    Controls:
+        - Arrow keys: Move player through the maze
+        - ESC: Exit the application
+        - P: Show path from current position to exit
+        - G: Generate a new maze
+        - H: Hide path and refresh display
+        - C: Change wall color randomly
+    """
     width_pixel = width * 40
     length_pixel = length * 40
     if width_pixel > 1920 or length_pixel > 1000:
@@ -69,7 +107,16 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
     size_line = result[2]
 
     def put_pixel(x: Any, y: Any, color: Any) -> Any:
-        """Put a pixel at (x, y) with the given color in the image data"""
+        """Put a pixel at (x, y) with the given color in the image data.
+
+        Args:
+            x: The x-coordinate of the pixel.
+            y: The y-coordinate of the pixel.
+            color: The color value as an integer (RGB format).
+
+        Note:
+            Pixels outside the image boundaries are silently ignored.
+        """
         if 0 <= x < width_pixel and 0 <= y < length_pixel:
             offset = y * size_line + x * 4
             if offset + 4 <= len(data):
@@ -87,6 +134,11 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
                                         "assets/player_idle1.xpm")
 
     def back_img() -> Any:
+        """Render the background image by tiling it across the entire window.
+
+        Tiles the background XPM image to cover the complete window area,
+        creating a seamless background pattern for the maze.
+        """
         for y in range(0, length_pixel, bg_lenght):
             for x in range(0, width_pixel, bg_width):
                 mlx1.mlx_put_image_to_window(k, win, bg_img, x, y)
@@ -95,6 +147,12 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
     back_img()
 
     def player(x: Any, y: Any) -> Any:
+        """Draw the player sprite at the specified position.
+
+        Args:
+            x: The x-coordinate in pixels where the player will be drawn.
+            y: The y-coordinate in pixels where the player will be drawn.
+        """
         mlx1.mlx_put_image_to_window(k, win, pl_img, x, y)
 
     colors = [
@@ -124,6 +182,14 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
         k, "assets/wall_1337_neon.xpm")
 
     def draw_42(mz: Any) -> Any:
+        """Draw special '42' themed wall images on cells marked with _42_path.
+
+        Iterates through the maze and renders the special 42 neon wall image
+        on any cell that has the _42_path attribute set to True.
+
+        Args:
+            mz: The 2D maze array containing cell objects.
+        """
         y_offset = 0
         for row in mz:
             x_offset = 0
@@ -151,6 +217,13 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
     pl_y = ENTRY[1] * 40 + 10
 
     def draw_path() -> Any:
+        """Visualize the solution path from the player's current position to
+        the exit.
+
+        Calculates the shortest path using the pathfinder algorithm and renders
+        directional arrow indicators on each cell of the path, showing the
+        direction to travel (up, down, left, or right).
+        """
         path = pathfinder(mz, (pl_x // 40, pl_y // 40), EXIT, width, length)
         direction_i = 0
         CELL = 40
@@ -179,6 +252,19 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
                 break
 
     def draw_maze(maze: Any, color: Any, sleep: Any) -> Any:
+        """Render the maze walls to the image buffer.
+
+        Draws all walls of the maze by iterating through each cell and
+        rendering its north, south, east, and west walls based on the
+        cell's wall properties.
+
+        Args:
+            maze: The 2D maze array containing cell objects with wall
+            properties.
+            color: The color value for the walls as an integer (RGB format).
+            sleep: If True, adds a small delay between drawing cells for an
+                  animated effect. If False, draws immediately.
+        """
         CELL = 40
         y_offset = 0
         for row in maze:
@@ -210,6 +296,11 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
     draw_maze(mz, wall_color, True)
 
     def render() -> Any:
+        """Perform a complete render of the maze scene.
+
+        Draws all visual elements in the correct order: 42 path markers,
+        maze walls, the image buffer, and finally the player sprite.
+        """
         draw_42(mz)
         draw_maze(mz, wall_color, False)
         mlx1.mlx_put_image_to_window(k, win, img, 0, 0)
@@ -220,6 +311,12 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
     prev_y = 0
 
     def regenerate_maze() -> Any:
+        """Generate and display a new maze, resetting the player position.
+
+        Creates a new maze using the same parameters as the original,
+        animates the transition by erasing the old maze and drawing the new
+        one, and resets the player to the entry point.
+        """
         nonlocal pl_x, pl_y
         pl_x = ENTRY[0] * 40 + 10
         pl_y = ENTRY[1] * 40 + 10
@@ -258,6 +355,26 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
         mz = new_maze
 
     def on_key(keycode: Any, param: Any) -> Any:
+        """Handle keyboard input events for player interaction.
+
+        Processes key presses to control player movement, maze regeneration,
+        path visualization, and other interactive features.
+
+        Args:
+            keycode: The integer keycode of the pressed key.
+            param: Additional parameter passed by MLX (unused).
+
+        Key Bindings:
+            - 65307 (ESC): Exit the application
+            - 65362 (Up Arrow): Move player north
+            - 65364 (Down Arrow): Move player south
+            - 65361 (Left Arrow): Move player west
+            - 65363 (Right Arrow): Move player east
+            - 99 (C): Change wall color randomly
+            - 112 (P): Show solution path
+            - 103 (G): Generate new maze
+            - 104 (H): Hide path and refresh display
+        """
         nonlocal pl_x, pl_y, wall_color, prev_x, prev_y
         prev_x = pl_x
         prev_y = pl_y
