@@ -67,8 +67,8 @@ The program reads configuration from a file, generates a maze based on specified
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Roy-ALPHA/A-mazing-guide.git
-   cd A-mazing-guide
+   git clone https://github.com/youssenna/a-maze-ing.git
+   cd a-maze-ing
    ```
 
 2. **Install dependencies using Make:**
