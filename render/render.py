@@ -147,12 +147,6 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
                                  path_end_img,
                                  EXIT[0] * 40 + 10,
                                  EXIT[1] * 40 + 10)
-
-    # def back_img() -> Any:
-    #     for y in range(0, length_pixel, bg_lenght):
-    #         for x in range(0, width_pixel, bg_width):
-    #             mlx1.mlx_put_image_to_window(k, win, bg_img, x, y)
-
     pl_x = ENTRY[0] * 40 + 10
     pl_y = ENTRY[1] * 40 + 10
 
@@ -199,7 +193,7 @@ def mlx_render(width: Any, length: Any, ENTRY: Any, EXIT: Any,
                         put_pixel(x, y_offset + CELL - 1, color)
 
                 if sleep is True:
-                    time.sleep(0.0001)
+                    time.sleep(0.001)
                     mlx1.mlx_put_image_to_window(k, win, img, 0, 0)
 
                 if cell.west:

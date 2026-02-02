@@ -289,6 +289,47 @@ a_maze/
 
 ---
 
+## 📦 Distributable Package
+
+This project includes a pre-built Python wheel package for easy distribution:
+
+**`mazegen-1.0.0-py3-none-any.whl`**
+
+### What is a .whl file?
+
+A `.whl` (wheel) file is a built distribution format for Python packages. It's a ZIP archive with a specific naming convention that allows for faster installation compared to source distributions.
+
+### Installing the Package
+
+```bash
+pip install mazegen-1.0.0-py3-none-any.whl
+```
+
+### Using the Package
+
+After installation, you can import and use the maze generation modules in your own projects:
+
+```python
+from maze.mazegen import MazeGenerator
+from maze.pathfinder import pathfinder
+
+# Create and generate a maze
+maze = MazeGenerator(width=20, height=20, Entry=(0,0), EXIT=(19,19), out_file="output.txt")
+maze.creat_maze_bakctracker_algo()
+```
+
+### Building Your Own Wheel
+
+To rebuild the wheel package from source:
+
+```bash
+python setup.py bdist_wheel
+```
+
+The new wheel will be created in the `dist/` directory.
+
+---
+
 ## 👥 Team & Project Management
 
 ### Team Roles
@@ -303,8 +344,9 @@ a_maze/
 **Initial Planning:**
 - `day 1` : Research algorithms, set up project structure
 - `days 2, 3, 4` : Implement maze generation (Backtracker & Prim's)
-- `days `5, 6`: Implement rendering and pathfinding
-- `day 4`: Integration, testing, and documentation
+- `days 5, 6`: Implement rendering and pathfinding
+- `day 7, 8`: Integration, testing, and documentation
+- `day 9`: creat package .whl file with yousenna
 
 **How it Evolved:**
 - The 42 pattern feature was added mid-project as an enhancement
@@ -348,6 +390,7 @@ AI tools were used in this project for:
 - **README Generation**: Structuring and formatting this documentation
 - **Debugging Assistance**: Identifying issues with mypy configuration and linting setup
 - **Code Review**: Suggesting improvements for type hints and error handling
+
 
 All core algorithms (maze generation, pathfinding) were implemented by the team members based on algorithmic understanding from the referenced resources.
 
